@@ -52,7 +52,73 @@ limitations under the License.
       
     	<h3 class="form-signin-heading"><a href="index.html">IKANOW API Code Samples</a> > Get Public Communities</h3>
     	
-    	
+    	<div class="alert">
+  			<p>The Get Public Communities API (api/community/getpublic/) returns a an array JSON objects representing
+			all of the publicly visible communities. The Get Community (api/community/get/) returns the JSON for a
+			single community.</p> 
+		</div>
+		
+		<table width="100%" cellspacing="0" cellpadding="8">
+			<tr valign="top" style="border-bottom-width: 1px; border-bottom-style:dotted; border-bottom-color:#DADADA;">
+				<td colspan="3"><h4>API Key and User ID</h4></td>
+			</tr>
+			<tr valign="top">
+				<td width="15%"><span class="label label-info">API Key:</span></td>
+				<td width="35%"><input type="text" style="width: 300px;" id="apiKey" placeholder="API Key"></td>
+				<td width="50%"><button class="btn" id="getCommunities">Get Communities</button></td>
+			</tr>
+			
+			<tr valign="top" style="border-bottom-width: 1px; border-bottom-style:dotted; border-bottom-color:#DADADA;">
+				<td colspan="3"></td>
+			</tr>
+			<tr valign="top">
+				<td width="15%"><span class="label label-info">Public Communities:</span></td>
+				<td width="85%" colspan="2">
+					<div id="communitiesDiv"></div>
+				</td>
+			</tr>
+			
+			<tr valign="top" style="border-bottom-width: 1px; border-bottom-style:dotted; border-bottom-color:#DADADA;">
+				<td colspan="3"></td>
+			</tr>
+			<tr valign="top">
+				<td width="15%"><span class="label label-info">Selected Community:</span></td>
+				<td width="85%" colspan="2">
+					<table width="100%" cellpadding="4">
+						<tr valign="top">
+							<td width="15%"><strong>ID:</strong></td>
+							<td width="35%"><div id="idDiv"></div></td>
+							<td width="15%"><strong>Status:</strong></td>
+							<td width="35%"><div id="statusDiv"></div></td>
+						</tr>
+						<tr valign="top">
+							<td><strong>Name:</strong></td>
+							<td><div id="nameDiv"></div></td>
+							<td><strong>Description:</strong></td>
+							<td><div id="descriptionDiv"></div></td>
+						</tr>
+						<tr valign="top">
+							<td><strong>Owner:</strong></td>
+							<td><div id="ownerDisplayNameDiv"></div></td>
+							<td><strong>Members:</strong></td>
+							<td><div id="membersDiv"></div></td>
+						</tr>
+						<tr valign="top">
+							<td><strong>Is Public:</strong></td>
+							<td><div id="isPublicDiv"></div></td>
+							<td><strong>Self Registration:</strong></td>
+							<td><div id="registrationDiv"></div></td>
+						</tr>
+						<tr valign="top">
+							<td><strong>Created:</strong></td>
+							<td><div id="createdDiv"></div></td>
+							<td><strong>Modified:</strong></td>
+							<td><div id="modifiedDiv"></div></td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+		</table>
     	
 	</div>
 		
@@ -60,3 +126,101 @@ limitations under the License.
 
 </body>
 </html>
+
+<!---------- JQuery Code ---------->
+<script>
+	var apiRoot = "http://api.ikanow.com/";
+
+	$(document).ready(function () {
+		$("#getCommunities").click(function() { getCommunities(); });
+		$("#getCommunity").live('click', function() { getCommunity($(this).text()); });
+	});
+	
+	function getCommunity( communityId )
+	{
+		var apiKey = $('#apiKey').val();
+		if (apiKey.length > 0) {
+			var apiAddress = apiRoot + "api/community/get/" + communityId;
+			var apiData =  "infinite_api_key=" + apiKey;
+			
+			var response = $.ajax({
+				type: 'GET',
+				url: apiAddress,
+				data: apiData,
+				async: false,
+				contentType: "application/json",
+				dataType: 'jsonp',
+				jsonp: 'jsonp'
+			});
+			response.done(function(msg) {
+				if (msg.response != null && msg.response.success == true) {
+					var community = msg.data;
+					var attributes = community.communityAttributes;
+					console.log(attributes);
+					$("#idDiv").html(community._id);
+					$("#statusDiv").html(community.communityStatus);
+					$("#nameDiv").html(community.name);
+					$("#descriptionDiv").html(community.description);
+					$("#ownerDisplayNameDiv").html(community.ownerDisplayName);
+					$("#membersDiv").html(community.numberOfMembers);
+					$("#isPublicDiv").html(attributes.isPublic.value);
+					$("#registrationDiv").html(attributes.usersCanSelfRegister.value);
+					$("#createdDiv").html(community.created);
+					$("#modifiedDiv").html(community.modified);
+				}
+			});
+		}
+	}
+	
+	function getCommunities()
+	{
+		var apiKey = $('#apiKey').val();
+		
+		if (apiKey.length > 0) {
+			var apiAddress = apiRoot + "api/community/getpublic/";
+			var apiData =  "infinite_api_key=" + apiKey;
+
+			var response = $.ajax({
+				type: 'GET',
+				url: apiAddress,
+				data: apiData,
+				async: false,
+				contentType: "application/json",
+				dataType: 'jsonp',
+				jsonp: 'jsonp'
+			});
+			response.done(function(msg) {
+				if (msg.response != null && msg.response.success == true) {
+					var communities = msg.data;
+					console.log(communities);
+					
+					var communityString = "<table cellpadding='5' width='100%' style='border-width: 1px; border-style:solid; border-color:#DADADA;'>";
+					communityString += "<tr style='background-color:#D9D9D9;'>";
+					communityString += "<td width='15%'><strong>Community ID</strong></td>";
+					communityString += "<td width='35%'><strong>Name</strong></td>";
+					communityString += "<td width='50%'><strong>Description</strong></td>";
+					communityString += "</tr>";
+					
+					var alternate = false;
+					for (var i=0; i < communities.length; i++) {
+						var community = communities[i];
+						if (alternate == false) {
+							communityString += "<tr valign='top' style='background-color:#ffffff;'>";
+							alternate = true; 
+						} 
+						else { 
+							communityString += "<tr valign='top' style='background-color:#E0F0FF;'>";
+							alternate = false; 
+						}
+						communityString += "<td width='15%'><button style='width: 250px;' class='btn' id='getCommunity'>" + community._id + "</button></td>";
+						communityString += "<td width='35%'>" + community.name + "</td>";
+						communityString += "<td width='50%'>" + community.description + "</td>";
+						communityString += "</tr>";
+					}
+					communityString += "</table>";
+					$("#communitiesDiv").html(communityString); 
+				}
+			});
+		}
+	}
+</script>
