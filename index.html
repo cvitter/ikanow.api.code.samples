@@ -42,22 +42,63 @@ limitations under the License.
 
 <div class="container">
 	<div class="main-div">
-		<h3 class="main-div-heading">IKANOW API - Query Generator</h3>
+		<h3 class="form-signin-heading">IKANOW API Code Samples</h3>
 		
-<script>
-	$.ajax(
-		   {
-		      type:'GET',
-		      url:'http://api.ikanow.com/api/social/person/get/',
-		      data:"infinite_api_key=926q2kscnmww9ky3u6682hb3",
-		      dataType: "JSONP",
-		      success: function(data){
-		        alert('successful');
-		      }
-		   }
-		);
-</script>
-		
+    	<div class="alert">
+  			<p>
+  			The IKANOW API Code Samples project is a set of simple code examples built using HTML, JavaScript, and
+  			JQuery (with some additional help from Twitter's <a href="http://twitter.github.com/bootstrap/">Bootstrap</a> and
+  			<a href="http://codemirror.net/">CodeMirror</a>) to demonstrate how to connect to and use the
+  			<a href="http://developer.ikanow.com">IKANOW Developer API</a>. <strong>Important:</strong>
+  			Before interacting with the API you will need to sign up for a <strong>free</strong> API Key at:
+  			 <a href="http://developer.ikanow.com/member/register">http://developer.ikanow.com/member/register</a>. </p>
+  			 
+  			 <p>The IKANOW API Code Samples project repository is available on GitHub:
+  			 <a href="https://github.com/cvitter/ikanow.api.code.samples">https://github.com/cvitter/ikanow.api.code.samples</a>. </p> 
+		</div>
+
+		<table width="100%" cellspacing="0" cellpadding="8">
+			<tr valign="top" style="border-bottom-width: 1px; border-bottom-style:dotted; border-bottom-color:#DADADA;">
+				<td colspan="2">
+					<h3>Code Samples</h3>
+				</td>
+			</tr>
+			<tr valign="top">
+				<td width="50%">
+					<h4>Person</h4>
+					
+					<p><strong>api/social/person/get/</strong>: The Person Get API returns the Person JSON object
+					for the User ID passed in (or for the current user if no ID is passed). The User Account
+					Information sample page shows how to fetch user information and parse it using JQuery.</p>
+					
+					<li><a href="personGet.html">Person Get</a></li>
+				</td>
+				<td width="50%">
+					<h4>Public Communities</h4>
+					
+					<p><strong>api/community/getpublic/</strong>: The Get Public Communities API returns a list of
+					all communities that are publicly visible (whether or not the user calling the API is a
+					member of each community). The sample code shows how to retrieve the list and simple ways
+					of interacting with the community JSON object.</p>
+					
+					<li><a href="publicCommunities.html">Get Public Communities</a></li>
+				</td>
+			</tr>
+			<tr valign="top">
+				<td width="50%">
+					
+				</td>
+				<td width="50%">
+					<h4>Query Generator</h4>
+					
+					<p>The IKANOW API - Query Generator is an interactive tool useful for learning how to 
+					write query objects for the Document Query API (as well as demonstrating simple techniques 
+					for developing applications that interact with the IKANOW Developer API using JavaScript and JSP).</p>
+					
+					<li><a href="queryGenerator.html">Query Generator</a></li>
+				</td>
+			</tr>
+		</table>
 		
 	</div>
 </div>

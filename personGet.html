@@ -1,0 +1,192 @@
+<!--
+Copyright 2012 The Infinit.e Open Source Project
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+	<title>IKANOW API Code Samples > Person Get</title>
+
+	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="IKANOW API Code Samples > Query Generator">
+    <meta name="author" content="Craig Vitter, IKANOW">
+	
+	<link rel="shortcut icon" href="image/favicon.ico" />
+	<link rel="stylesheet" type="text/css" href="lib/codemirror.css" />
+
+    <link href="lib/bootstrap/css/bootstrap.css" rel="stylesheet">
+	<link href="lib/base.css" rel="stylesheet">
+    <link href="lib/bootstrap/css/bootstrap-responsive.css" rel="stylesheet">
+    <script type="text/javascript" src="lib/bootstrap/js/jquery-latest.js"></script>
+    
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->    
+   	<script type="text/javascript" src="lib/codemirror.js"></script>
+    
+	<style type="text/css">
+      .CodeMirror { border: 1px solid #eee; }
+      td { padding-right: 20px; }
+    </style>
+
+</head>
+<body>
+
+<div class="container">
+
+	<div class="main-div">
+      
+    	<h3 class="form-signin-heading"><a href="index.html">IKANOW API Code Samples</a> > Person Get</h3>
+    	
+    	<div class="alert">
+  			<p>The Person Get API (api/social/person/get/) returns a JSON object representing all of the 
+  			user's properties for the User ID passed in (or for the current user if no ID is passed).</p> 
+		</div>
+		
+		<table width="100%" cellspacing="0" cellpadding="8">
+			<tr valign="top" style="border-bottom-width: 1px; border-bottom-style:dotted; border-bottom-color:#DADADA;">
+				<td colspan="3"><h4>API Key and User ID</h4></td>
+			</tr>
+			<tr valign="top">
+				<td width="15%"><span class="label label-info">API Key:</span></td>
+				<td width="35%"><input type="text" style="width: 300px;" id="apiKey" placeholder="API Key"></td>
+				<td width="50%"></td>
+			</tr>
+			<tr valign="top">
+				<td width="15%"><span class="label label-info">User ID:</span></td>
+				<td width="35%"><input type="text" style="width: 300px;" id="userId" placeholder="User ID"></td>
+				<td width="50%"><button class="btn" id="getUserInfo">Get User Info</button></td>
+			</tr>
+			<tr valign="top" style="border-bottom-width: 1px; border-bottom-style:dotted; border-bottom-color:#DADADA;">
+				<td colspan="3"><h4>User Information</h4></td>
+			</tr>
+			<tr valign="top">
+				<td width="15%"><span class="label label-info">User Properties:</span></td>
+				<td width="85%" colspan="2">
+					<table width="100%" cellpadding="4">
+						<tr>
+							<td width="15%"><strong>User ID:</strong></td>
+							<td width="35%"><div id="userIdDiv"></div></td>
+							<td width="15%"><strong>Account Status:</strong></td>
+							<td width="35%"><div id="accountStatusDiv"></div></td>
+						</tr>
+						<tr>
+							<td><strong>First Name:</strong></td>
+							<td><div id="firstNameDiv"></div></td>
+							<td><strong>Last Name:</strong></td>
+							<td><div id="lastNameDiv"></div></td>
+						</tr>
+						<tr>
+							<td><strong>Display Name:</strong></td>
+							<td><div id="displayNameDiv"></div></td>
+							<td><strong>Phone:</strong></td>
+							<td><div id="phoneDiv"></div></td>
+						</tr>
+						<tr>
+							<td><strong>Email:</strong></td>
+							<td colspan="3"><div id="emailDiv"></div></td>
+						</tr>
+						<tr valign="top">
+							<td><strong>Communities:</strong></td>
+							<td colspan="3">
+								<div id="communitiesDiv"></div>
+							</td>
+						</tr>
+						<tr>
+							<td><strong>Created:</strong></td>
+							<td><div id="createdDiv"></div></td>
+							<td><strong>Modified:</strong></td>
+							<td><div id="modifiedDiv"></div></td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+			<tr valign="top">
+				<td width="15%"></td>
+				<td width="85%" colspan="2"></td>
+			</tr>
+		</table>
+    	
+	</div>
+		
+</div> <!-- /container -->
+
+</body>
+</html>
+
+
+<!---------- JQuery Code ---------->
+<script>
+
+	var apiRoot = "http://api.ikanow.com/";
+
+	$(document).ready(function () {
+		$("#getUserInfo").click(function() { getUserInfo(); });
+	});
+	
+	function getUserInfo()
+	{
+		var apiKey = $('#apiKey').val();
+		var userId = $('#userId').val();
+		
+		if (apiKey.length > 0) {
+			var apiAddress = apiRoot + "api/social/person/get/" + userId;
+			var apiData =  "infinite_api_key=" + apiKey;
+
+			var response = $.ajax({
+				type: 'GET',
+				url: apiAddress,
+				data: apiData,
+				async: false,
+				contentType: "application/json",
+				dataType: 'jsonp',
+				jsonp: 'jsonp'
+			});
+			response.done(function(msg) {
+				if (msg.response != null && msg.response.success == true) {
+					var user = msg.data;
+					console.log(user);
+					
+					$("#userIdDiv").html(user._id);
+					$("#accountStatusDiv").html(user.accountStatus);
+					$("#firstNameDiv").html(user.firstName);
+					$("#lastNameDiv").html(user.lastName);
+					$("#displayNameDiv").html(user.displayName);
+					$("#phoneDiv").html(user.phone);
+					$("#emailDiv").html(user.email);
+					$("#createdDiv").html(user.created);
+					$("#modifiedDiv").html(user.modified);
+					
+					var communities = user.communities;
+					var communityString = "<table width='100%'><tr><td width='25%'><strong>Community ID</strong></td><td width='75%'><strong>Name</strong></td></tr>";
+					for (var i=0; i < communities.length; i++) {
+						var community = communities[i];
+						communityString += "<tr><td width='25%'>" + community._id + 
+							"</td><td width='75%'>" + community.name + "</td></tr>"
+					}
+					communityString += "</table>";
+					$("#communitiesDiv").html(communityString);
+				}
+			});
+		}
+	}
+	
+	
+</script>
+
+
+
