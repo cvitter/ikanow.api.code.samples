@@ -204,8 +204,6 @@ limitations under the License.
 					<input type="text" id="latLonDecay" style="width: 100px;" placeholder="Decay">
 				</td>
 			</tr>
-
-
 			
 			<tr valign="top" style="border-bottom-width: 1px; border-bottom-style:dotted; border-bottom-color:#DADADA;">
 				<td colspan="3"><h4>Post URL and Body</h4></td>
@@ -218,7 +216,6 @@ limitations under the License.
 				</td>
 				<td>
 					<button class="btn" id="createQuery">Create Query</button>
-					<!-- <button class="btn" id="postQuery">Post Query</button> -->
 				</td>
 			</tr>
 			<tr>
@@ -226,6 +223,7 @@ limitations under the License.
 					<textarea id="queryJson" name="queryJson"></textarea>
 				</td>
 			</tr>
+
 		</table>
 	
 	</div>
@@ -237,19 +235,20 @@ limitations under the License.
 
 <!---------- CodeMirror JavaScripts ---------->
 <script>
-	var testEditor = CodeMirror.fromTextArea(document.getElementById("queryJson"), {
+	var queryEditor = CodeMirror.fromTextArea(document.getElementById("queryJson"), {
 		theme: 'default',
 	  	lineNumbers: true,
 	    matchBrackets: true
 	});
+
 </script>
 
 <!---------- JQuery Code ---------->
 <script>
 
-	var defaultPostUrl = "http://api.ikanow.com/api/knowledge/document/query/{communityIds}?infinite_api_key={apiKey}";
+	var defaultPostUrl = "http://ikanow.api.mashery.com/api/knowledge/document/query/{communityIds}?infinite_api_key={apiKey}";
 	
-	var apiRoot = "http://api.ikanow.com/";
+	var apiRoot = "http://ikanow.api.mashery.com/";
 	$(document).ready(function () {
 		$('#postUrl').val(defaultPostUrl);
 		
@@ -257,8 +256,8 @@ limitations under the License.
 		$("#getCommunities").click(function() { getCommunities(); });
 		$("#getSources").click(function() { getSources(); });
 		$("#createQuery").click(function() { createQuery(); });
-
 	});
+	
 
 
 	function createQuery()
@@ -404,7 +403,7 @@ limitations under the License.
 		
 		
 		// Write queryObject to codemirror textbox
-		testEditor.setValue(JSON.stringify(queryObject,null,'\t'));
+		queryEditor.setValue(JSON.stringify(queryObject,null,'\t'));
 	}
 	
 	function isInt(value) { 
