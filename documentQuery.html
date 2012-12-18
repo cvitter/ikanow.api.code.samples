@@ -1,0 +1,182 @@
+<!--
+Copyright 2012 The Infinit.e Open Source Project
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+	<title>IKANOW API Code Samples > Document Query</title>
+
+	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="IKANOW API Code Samples > Document Query">
+    <meta name="author" content="Craig Vitter, IKANOW">
+	
+	<link rel="shortcut icon" href="image/favicon.ico" />
+	<link rel="stylesheet" type="text/css" href="lib/codemirror.css" />
+
+    <link href="lib/bootstrap/css/bootstrap.css" rel="stylesheet">
+	<link href="lib/base.css" rel="stylesheet">
+    <link href="lib/bootstrap/css/bootstrap-responsive.css" rel="stylesheet">
+    <script type="text/javascript" src="lib/bootstrap/js/jquery-latest.js"></script>
+    
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->    
+   	<script type="text/javascript" src="lib/codemirror.js"></script>
+    
+	<style type="text/css">
+      .CodeMirror { border: 1px solid #eee; }
+      td { padding-right: 20px; }
+    </style>
+
+</head>
+<body>
+
+<div class="container">
+
+	<div class="main-div">
+      
+    	<h3 class="form-signin-heading"><a href="index.html">IKANOW API Code Samples</a> > Document Query</h3>
+    	
+    	<div class="alert">
+  			<p>The Document Query API (api/knowledge/document/query) returns an array JSON objects 
+  			representing documents returned by a simple query of all of the sources contained within
+  			the selected community.</p> 
+		</div>
+		
+		<table width="100%" cellspacing="0" cellpadding="8">
+			<tr valign="top" style="border-bottom-width: 1px; border-bottom-style:dotted; border-bottom-color:#DADADA;">
+				<td colspan="3"><h4>API Key</h4></td>
+			</tr>
+			<tr valign="top">
+				<td width="15%"><span class="label label-info">API Key:</span></td>
+				<td width="60%"><input type="text" style="width: 300px;" id="apiKey" placeholder="API Key"></td>
+				<td width="25%"><button class="btn" id="getCommunities">Get Communities</button></td>
+			</tr>
+			<tr valign="top">
+				<td><span class="label label-info">Community:</span></td>
+				<td><select id="communitiesList" style="width: 375px;"></select> &nbsp;&nbsp; <input type="text" style="width: 50px;" id="numDocs" placeholder="2"></td>
+				<td><button class="btn" id="runQuery">Run Query</button></td>
+			</tr>
+			<tr valign="top" style="border-bottom-width: 1px; border-bottom-style:dotted; border-bottom-color:#DADADA;">
+				<td colspan="3"></td>
+			</tr>
+			
+			<tr valign="top">
+				<td width="15%"></td>
+				<td width="85%" colspan="2"><textarea id="queryJson" name="queryJson"></textarea></td>
+			</tr>
+		</table>
+    	
+	</div>
+		
+</div> <!-- /container -->
+
+</body>
+</html>
+
+<!---------- CodeMirror JavaScripts ---------->
+<script>
+	var queryEditor = CodeMirror.fromTextArea(document.getElementById("queryJson"), {
+		theme: 'default',
+	  	lineNumbers: true,
+	  	lineWrapping: true,
+	    matchBrackets: true
+	});
+
+</script>
+
+<!---------- JQuery Code ---------->
+<script>
+
+	var apiRoot = "http://ikanow.api.mashery.com/";
+
+	$(document).ready(function () {
+		$("#getCommunities").click(function() { getCommunities(); });
+		$("#runQuery").click(function() { runQuery(); });
+	});
+	
+	
+	function runQuery()
+	{
+		queryEditor.setValue("");
+		
+		var apiKey = $('#apiKey').val();
+		var numDocs = $('#numDocs').val();
+		if (numDocs.length < 1) numDocs = 2;
+		var communityList = $('select#communitiesList').val();
+		
+		if (apiKey.length > 0 && communityList.length > 0) {
+			var apiAddress = apiRoot + "api/knowledge/document/query/" + communityList;
+			var apiData = "infinite_api_key=" + apiKey + "&output.docs.numReturn=" + numDocs;
+	
+			$.ajax({
+				type: 'GET',
+				url: apiAddress,
+				data: apiData,
+				async: true,
+				contentType: "application/json",
+				dataType: 'jsonp',
+				jsonp: 'jsonp',
+				success: function(msg) {
+					if (msg.response != null && msg.response.success == true) {
+						queryEditor.setValue(JSON.stringify( msg.data, null, '\t' ));
+					}
+				}
+			});
+
+		}
+	}
+	
+	// 
+	function getCommunities()
+	{
+		var apiKey = $('#apiKey').val();
+		
+		if (apiKey.length > 0) {
+			var apiAddress = apiRoot + "api/social/person/get/";
+			var apiData = "infinite_api_key=" + apiKey;
+			
+			var response = $.ajax({
+				type: 'GET',
+				url: apiAddress,
+				data: apiData,
+				async: false,
+				contentType: "application/json",
+				dataType: 'jsonp',
+				jsonp: 'jsonp'
+			});
+			response.done(function(msg) {
+				if (msg.response != null && msg.response.success == true) {
+					var communities = msg.data.communities;
+					var communityContainer = $('#communitiesList');
+					communityContainer.empty();
+					
+					for (var i=0; i < communities.length; i++) {
+						var community = communities[i];
+						$('#communitiesList').append($('<option>', { value: community._id, text : community.name }));
+					}
+				}
+			});	
+		}
+	}
+	
+	
+</script>
+
+
+
